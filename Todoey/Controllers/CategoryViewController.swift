@@ -7,9 +7,11 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class CategoryViewController: UITableViewController {
+    
+    let realm = try! Realm()
     
     var categoryArray = [Category]()
 
@@ -62,10 +64,12 @@ class CategoryViewController: UITableViewController {
     
     //MARK: - Data Manipulation Methods
     //for CRUD
-        func saveCategories() {
+    func save(category: Category) {
             
             do {
-                try  context.save()
+                try  realm.write {
+                     realm.add(category)
+                }
             } catch {
                 print("Error saving category\(error)")
             }
@@ -78,15 +82,15 @@ class CategoryViewController: UITableViewController {
    
     
     func loadCategories() {
-    let request : NSFetchRequest<Category> = Category.fetchRequest()
-    
-    do {
-    categoryArray = try context.fetch(request)
-    } catch {
-    print("Error loading categories \(error)")
-    }
-    
-    tableView.reloadData()
+//    let request : NSFetchRequest<Category> = Category.fetchRequest()
+//
+//    do {
+//    categoryArray = try context.fetch(request)
+//    } catch {
+//    print("Error loading categories \(error)")
+//    }
+//
+//    tableView.reloadData()
     
         //my solution, BUT this solution worked
 //        func loadCategories(with request: NSFetchRequest<Category> = Category.fetchRequest()) {
@@ -109,11 +113,12 @@ class CategoryViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
             
-            let newCategory = Category(context: self.context)
+            let newCategory = Category()
             newCategory.name = textField.text!
+            
             self.categoryArray.append(newCategory)
             
-            self.saveCategories()
+            self.save(category: newCategory)
             
             self.tableView.reloadData()
         }
