@@ -12,7 +12,6 @@ import RealmSwift
 class Category: Object {
     @objc dynamic var name: String = ""
     //this describes the forwad relationship. ie in each category there are items. List is similar to Array and from Realm
-
     let items = List<Item>()
 }
 
