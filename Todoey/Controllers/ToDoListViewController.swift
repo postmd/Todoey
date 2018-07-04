@@ -39,7 +39,7 @@ class ToDoListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         
         if let item = todoItems?[indexPath.row] {
             cell.textLabel?.text = item.title
@@ -82,38 +82,28 @@ class ToDoListViewController: UITableViewController {
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
-    var textField = UITextField()
+        var textField = UITextField()
         
-    let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
-    
-    let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+        let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
         
-        if let currentCategory = self.selectedCategory {
-            do {
-            try self.realm.write {
-                let newItem = Item()
-                newItem.title = textField.text!
-                newItem.dateCreated = Date()
-                currentCategory.items.append(newItem)
-             }
-            } catch {
-                print("error saving new items \(error)")
-                print("saved")
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            //what will happen once the user clicks the Add Item button on our UIAlert
+            
+            if let currentCategory = self.selectedCategory {
+                do {
+                    try self.realm.write {
+                        let newItem = Item()
+                        newItem.title = textField.text!
+                        newItem.dateCreated = Date()
+                        currentCategory.items.append(newItem)
+                    }
+                } catch {
+                    print("Error saving new items, \(error)")
+                }
             }
-        }
-        
-        self.tableView.reloadData()
-
-
-        //let encoder = PropertyListEncoder()
-        
-//        do {
-//            let data = try encoder.encode(self.itemArray)
-//            try data.write(to: self.dataFilePath!)
-//        } catch {
-//            print("Error Encoding item array \(error) ")
-//        }
-        
+            
+            self.tableView.reloadData()
+            
         }
         
         alert.addTextField { (alertTextField) in
@@ -122,9 +112,11 @@ class ToDoListViewController: UITableViewController {
             
         }
         
+        
         alert.addAction(action)
         
         present(alert, animated: true, completion: nil)
+        
     }
     
     //MARK: - Model Manipulation Methods
@@ -155,7 +147,7 @@ class ToDoListViewController: UITableViewController {
 extension ToDoListViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
-        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text).sorted(byKeyPath: "dateCreated", ascending: true)
+        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text as Any).sorted(byKeyPath: "dateCreated", ascending: true)
         
         tableView.reloadData()
         
@@ -177,11 +169,6 @@ extension ToDoListViewController: UISearchBarDelegate {
 
 
 
-//DIRECTIONS
-// 1. new property ITEM Model
-//2. save data when we create new item in ToDoListeViewController
-//3. aplt the sort in search bar methods
-//4. make the items decsending from first create to most recent. 
 
 
 
